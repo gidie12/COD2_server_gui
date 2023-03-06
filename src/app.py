@@ -5,24 +5,29 @@ import platform
 import shutil
 import socket
 import subprocess
+import sys
 
 import tkinter as tk
 from tkinter import ttk, filedialog, messagebox
 
-from functions import GeneralFunctions, map_options, game_type_options
+from src.functions import GeneralFunctions, map_options, game_type_options
 import platform
 from pywinauto import Application
 
-from generate_file import GenerateFile
-
+from src.generate_file import GenerateFile
+from src.version import VERSION
 
 class MyApp(tk.Tk):
-    def __init__(self):
+    def __init__(self, profiles_dir, icons_dir, mods_dir):
         super().__init__()
+        self.profiles_dir = profiles_dir
+        self.mods_dir = mods_dir
         self.tab_control = tk.ttk.Notebook(self)
         self.function = GeneralFunctions()
-        self.title("Call Of Duty 2 Server Manager")
+        self.title(f"Call Of Duty 2 Server Manager {VERSION}")
         self.geometry("800x600")
+        self.iconbitmap(os.path.join(icons_dir, 'Call-of-Duty-2.ico'))
+
         self.host = 'windows' if platform.system() == 'Windows' else 'mac' if platform.system() == 'Darwin' else ''
         self.tab_control.grid(rowspan=15, columnspan=10)
         self.root_window()
@@ -368,8 +373,7 @@ class ProfileTab(tk.Frame):
         self.load_config()
 
     def get_profiles(self):
-        current_dir = os.getcwd()
-        profiles_dir = os.path.join(current_dir, 'profiles')
+        profiles_dir = self.master.profiles_dir
         if os.path.isdir(profiles_dir):
             for file in os.listdir(profiles_dir):
                 if file.endswith(".json"):
@@ -380,12 +384,14 @@ class ProfileTab(tk.Frame):
     def get_profile_file_name(self):
         if len(self.profile_name.get()) > 0:
             if self.profile_name.get().endswith(".json"):
-                CONFIG_FILE = os.path.join('profiles', self.profile_name.get())
+                CONFIG_FILE = os.path.join(self.master.profiles_dir, self.profile_name.get())
+                # CONFIG_FILE = os.path.join('profiles', self.profile_name.get())
             else:
                 full_name = f'{self.profile_name.get()}.json'
-                CONFIG_FILE = os.path.join('profiles', full_name)
+                CONFIG_FILE = os.path.join(self.master.profiles_dir, full_name)
+                # CONFIG_FILE = os.path.join('profiles', full_name)
         else:
-            CONFIG_FILE = 'profiles/config.json'
+            CONFIG_FILE = os.path.join(self.master.profiles_dir, 'config.json')
         return CONFIG_FILE
 
     def select_profile_to_load(self):
@@ -483,8 +489,7 @@ class ModsTab(tk.Frame):
     def __init__(self, master, **kw):
         super().__init__(master, **kw)
         self.mods_list = []
-        self.current_dir = os.getcwd()
-        self.mods_sub_dir = os.path.join(self.current_dir, 'mods')
+        self.mods_sub_dir = self.master.mods_dir
 
     def create(self):
         self.select_mod_label = tk.Label(self, text="Select Mod")
@@ -498,11 +503,11 @@ class ModsTab(tk.Frame):
         if self.combo_box_select_mod.get() != '':
             mod_dir = os.path.join(self.mods_sub_dir, self.combo_box_select_mod.get())
             main_dirname = os.path.join(os.path.dirname(self.master.config_tab.full_game_path.get()), 'main')
-            http_server_dir = os.path.join(os.getcwd(), 'httpserver_dir', 'main')
+            # http_server_dir = os.path.join(os.getcwd(), 'httpserver_dir', 'main')
             for file in os.listdir(mod_dir):
                 filepath = os.path.join(mod_dir, file)
                 shutil.copy(filepath, main_dirname)
-                shutil.copy(filepath, http_server_dir)
+                # shutil.copy(filepath, http_server_dir)
             messagebox.showinfo(f"Mods {self.combo_box_select_mod.get()}", f"{self.combo_box_select_mod.get()} has been applied to server.")
 
     def get_available_mods(self):

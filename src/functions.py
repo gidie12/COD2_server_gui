@@ -2,7 +2,7 @@ import subprocess
 
 import psutil
 
-from generate_file import GenerateFile
+from src.generate_file import GenerateFile
 
 CONFIG_FILE = 'profiles/config.json'
 # create a list of options for the combobox
