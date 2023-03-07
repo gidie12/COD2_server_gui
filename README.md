@@ -14,4 +14,7 @@ Using Python
 Using EXE
 https://github.com/gidie12/COD2_server_gui/tree/master/dist
 
+# Building EXE file
+python3.10 create_package.py
+
 # Help developing it please let me know
