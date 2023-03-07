@@ -44,14 +44,16 @@ if __name__ == "__main__":
 
     if getattr(sys, 'frozen', False):
         icons_dir = os.path.join(sys._MEIPASS, 'icons')
+        img_dir = os.path.join(sys._MEIPASS, 'img')
         source_profiles_dir = os.path.join(sys._MEIPASS, 'profiles')
         source_server_config_dir = os.path.join(sys._MEIPASS, 'server_config')
         source_mods_dir = os.path.join(sys._MEIPASS, 'mods')
     else:
         icons_dir = os.path.join(os.getcwd(), 'src', 'icons')
+        img_dir = os.path.join(os.getcwd(), 'src', 'img')
         source_profiles_dir = os.path.join(os.getcwd(), 'src', 'profiles')
         source_server_config_dir = os.path.join(os.getcwd(), 'src', 'server_config')
         source_mods_dir = os.path.join(os.getcwd(), 'src', 'mods')
 
     copy_files_to_config_dir()
-    app = MyApp(destination_profiles_dir, icons_dir, destination_mods_dir)
+    app = MyApp(destination_profiles_dir, icons_dir, destination_mods_dir, img_dir)

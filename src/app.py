@@ -15,13 +15,17 @@ import platform
 from pywinauto import Application
 
 from src.generate_file import GenerateFile
+from src.tinker_addons import CheckboxWithPreview
 from src.version import VERSION
 
 class MyApp(tk.Tk):
-    def __init__(self, profiles_dir, icons_dir, mods_dir):
+    def __init__(self, profiles_dir, icons_dir, mods_dir, img_dir):
         super().__init__()
         self.profiles_dir = profiles_dir
         self.mods_dir = mods_dir
+        self.img_dir = img_dir
+        self.img_preview_img = os.path.join(self.img_dir, 'preview_images')
+        self.img_preview_config_file = os.path.join(self.img_dir, 'preview_images', 'preview.json')
         self.tab_control = tk.ttk.Notebook(self)
         self.function = GeneralFunctions()
         self.title(f"Call Of Duty 2 Server Manager {VERSION}")
@@ -451,9 +455,16 @@ class MapsTab(tk.Frame):
         self.combo_box_game_type = ttk.Combobox(self, values=self.game_type_options)
         self.combo_box_game_type.grid(row=15, column=1, sticky='w')
 
+        self.read_preview_config_file()
+
+    def read_preview_config_file(self):
+        with open(self.master.img_preview_config_file, "r") as f:
+            self.images_preview_config_list = json.load(f)
+
     def create(self):
         self.checkbox_map_vars = []
         self.checkboxes_map = []
+
         items = len(map_options)
         cols = 5
         rows = math.ceil(items / cols)
@@ -463,13 +474,27 @@ class MapsTab(tk.Frame):
         for row in range(rows):
             col = 0
             while col < cols and total_cols < items:
+                found = False
                 value = self.master.function.set_maps_vars(map_options[total_cols], maps_dict=self.maps_dict)
-                var = tk.BooleanVar(name=map_options[total_cols], value=value)
-                self.checkbox_map_vars.append(var)
-                maps_checkbox = tk.Checkbutton(self, text=map_options[total_cols], variable=var)
-                self.checkboxes_map.append(maps_checkbox)
-                # maps_checkbox.pack()
-                maps_checkbox.grid(row=row, column=col, padx=padx, pady=pady, sticky='w')
+
+                for setting in self.images_preview_config_list:
+                    if setting['name'] == map_options[total_cols] and setting['img'] != '':
+                        var = tk.BooleanVar(name=map_options[total_cols], value=value)
+                        maps_checkbox = CheckboxWithPreview(self, map_options[total_cols], os.path.join(self.master.img_preview_img, setting['img']), var)
+                        self.checkbox_map_vars.append(var)
+                        self.checkboxes_map.append(maps_checkbox)
+                        found = True
+                        print(found)
+                        maps_checkbox.grid(row=row, column=col, padx=padx, pady=pady, sticky='w')
+                        # maps_checkbox.bind("<Enter>", maps_checkbox_instance.show_preview)
+                        # maps_checkbox.bind("<Leave>", maps_checkbox_instance.hide_preview)
+
+                if not found:
+                    var = tk.BooleanVar(name=map_options[total_cols], value=value)
+                    self.checkbox_map_vars.append(var)
+                    maps_checkbox = tk.Checkbutton(self, text=map_options[total_cols], variable=var)
+                    self.checkboxes_map.append(maps_checkbox)
+                    maps_checkbox.grid(row=row, column=col, padx=padx, pady=pady, sticky='w')
                 col = col + 1
                 total_cols = total_cols + 1
 

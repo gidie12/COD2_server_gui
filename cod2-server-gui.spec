@@ -11,7 +11,7 @@ now = datetime.datetime.now()
 
 
 # SET YOUR VERSION HERE
-VERSION = '0.0.2'
+VERSION = '0.0.3'
 BUILD_DATE = now.strftime("%Y-%m-%d %H:%M:%S")
 
 # Write the version information to a version.py file
@@ -33,6 +33,8 @@ mods_dir = os.path.join(base_dir, 'mods')
 profiles_dir = os.path.join(base_dir, 'profiles')
 server_config_dir = os.path.join(base_dir, 'server_config')
 icon_dir = os.path.join(base_dir, 'icons')
+img_dir = os.path.join(base_dir, 'img')
+
 block_cipher = None
 
 
@@ -40,7 +42,7 @@ a = Analysis(
     ['./src/main.py'],
     pathex=[],
     binaries=[],
-    datas=[(mods_dir, 'mods'), (profiles_dir, 'profiles'), (server_config_dir, 'server_config'), (icon_dir,'icons')],
+    datas=[(mods_dir, 'mods'), (profiles_dir, 'profiles'), (server_config_dir, 'server_config'), (icon_dir,'icons'), (img_dir, 'img')],
     hiddenimports=[],
     hookspath=[],
     hooksconfig={},
